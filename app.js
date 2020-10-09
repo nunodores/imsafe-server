@@ -7,15 +7,9 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+const db = require("./modules/db");
+
 var app = express();
-const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://admin:admin@cluster0.drhz1.gcp.mongodb.net/imsafe?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  const collection = client.db("imsafe").collection("User");
-  // perform actions on the collection object
-  client.close();
-});
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -43,6 +37,37 @@ app.use(function(err, req, res, next) {
   // render the error page
   res.status(err.status || 500);
   res.render('error');
+});
+
+const port = 9000
+
+/**
+* Connect to Database, insert default user and start API server
+*/
+db.connect()
+ .then(db => {
+   let collection = db.collection("User");
+   collection.countDocuments().then(res => {
+     if (res === 0) {
+       collection
+         .insertOne({
+           login: "test",
+           password: "test",
+           firstName: "Nuno",
+           lastName: "trop long"
+         })
+         .catch(err => {
+           console.log("[App] Unable to insert default user");
+         });
+     }
+   });
+ })
+ .then((callback) => {
+  app.listen(port,  () => {
+      //console.info(`[Server] Listening on http://${host}:${port}`);
+      console.info(`[Server] Listening on ${port}`)
+      if (callback) callback(null)
+  })
 });
 
 module.exports = app;
