@@ -11,6 +11,7 @@ const usersRouter = require('../routes/users')
 const positionRouter = require('../routes/position')
 const indexRouter = require('../routes/index')
 const alertRouter = require('../routes/alerts')
+const assessmentRouter = require('../routes/assessments')
 
 /**
  * Variables
@@ -55,6 +56,7 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/alerts', alertRouter);
 app.use('/pos', positionRouter);
+app.use('/assessments', assessmentRouter);
 
 /**
  * Configuration
