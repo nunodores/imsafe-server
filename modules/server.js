@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const bodyParser = require('body-parser')
 const usersRouter = require('../routes/users')
+const positionRouter = require('../routes/position')
 const indexRouter = require('../routes/index')
 const alertRouter = require('../routes/alerts')
 
@@ -52,7 +53,11 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Configure routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+<<<<<<< HEAD
 app.use('/alerts', alertRouter);
+=======
+app.use('/pos', positionRouter);
+>>>>>>> 2126d72ef96e016f7c05f0d04c05db31771fd880
 
 /**
  * Configuration
