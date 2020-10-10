@@ -26,7 +26,7 @@ router.post('/register', function(req, res) {
           db.db.collection('User').insertOne({login: req.body.login,
               password: hash, firstName: req.body.firstName, 
               lastName: req.body.lastName, email: req.body.email,
-              phoneNumber: req.body.phoneNumber}).then((result) => {
+              uuid: req.body.uuid}).then((result) => {
               req.body._id = result.insertedId;
               delete req.password;
               res.json(req.body);
