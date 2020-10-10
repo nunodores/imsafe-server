@@ -11,6 +11,18 @@ router.get('/', function(req, res, next) {
 
 router.post('/update', function(req, res) {
     console.dir(req.body);
+
+   /*  db.db.collection('Location').replaceOne({uuid: req.body.uuid} ,{uuid: req.body.uuid, lat: req.body.lat,
+        lon: req.body.lon}).then((result) => {
+        req.body._id = result.insertedId;
+        delete req.password;
+        res.json(req.body);
+    }).catch((err) => {
+        res.status(500).send(err);
+    }); */
+
+    res.json({"safe_level": 2});
+
 });
 
 
