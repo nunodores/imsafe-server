@@ -5,8 +5,17 @@ const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
 /* GET users listing. */
-router.get('/', function(req, res, next) {
-  res.send('respond with a resource');
+router.get("/", function(req, res) {
+  db.db
+    .collection("User")
+    .find()
+    .toArray()
+    .then(all_items => {
+      res.json(all_items);
+    })
+    .catch(err => {
+      console.log("Error within get alerts:", err);
+    });
 });
 
 router.post('/register', function(req, res) {
