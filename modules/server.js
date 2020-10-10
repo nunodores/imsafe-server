@@ -8,6 +8,7 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 const bodyParser = require('body-parser')
 const usersRouter = require('../routes/users')
+const positionRouter = require('../routes/position')
 const indexRouter = require('../routes/index')
 
 /**
@@ -30,6 +31,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/pos', positionRouter);
 
 /**
  * Configuration
