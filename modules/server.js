@@ -9,6 +9,7 @@ var logger = require('morgan');
 const bodyParser = require('body-parser')
 const usersRouter = require('../routes/users')
 const indexRouter = require('../routes/index')
+const alertRouter = require('../routes/alerts')
 
 /**
  * Variables
@@ -16,6 +17,26 @@ const indexRouter = require('../routes/index')
 
 // Global variables
 const port = 9000
+
+// Create an authorization middleware to be used on the route to be secured
+var jwt = require('jsonwebtoken');
+const jwtSecret = process.env.JWT_SECRET;
+const authMiddleware = (req, res, next) => {
+    var token = req.get('authorization');
+    if (!token) {          
+        return res.json({ success: false, error: "A token is mandatory to subscribe to this API." });
+    }
+    jwt.verify(token, jwtSecret, (err, decoded) => {
+        if (err) {              
+            return res.json({ success: false, error: "Unable to parse token." });
+        }
+        if (decoded.exp <= Date.now()) {              
+            return res.json({ success: false, error: "Token has expired." });
+        }
+    req.token = decoded;
+    next();
+    });
+}
 
 var app = express();
 // view engine setup
@@ -28,8 +49,10 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 
+// Configure routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/alerts', alertRouter);
 
 /**
  * Configuration
@@ -49,24 +72,19 @@ app.use(function(req, res, next) {
 // Configure routes
 app.use(function (req, res, next) {
     console.log("[SERVER]"+req.method+ " " +req.url)
-    console.log("zefz")
     next();
 });
 
-// Configure routes
-app.use('/users', usersRouter)
-app.use('/index', indexRouter)
-
 // error handler
-app.use(function(err, req, res, next) {
-    // set locals, only providing error in development
-    res.locals.message = err.message;
-    res.locals.error = req.app.get('env') === 'development' ? err : {};
+// app.use(function(err, req, res, next) {
+//     // set locals, only providing error in development
+//     res.locals.message = err.message;
+//     res.locals.error = req.app.get('env') === 'development' ? err : {};
 
-    // render the error page
-    res.status(err.status || 500);
-    res.render('error');
-});
+//     // render the error page
+//     res.status(err.status || 500);
+//     res.render('error');
+// });
 
 // Start server
 var start = function (callback) {

@@ -25,7 +25,7 @@ router.post('/register', function(req, res) {
               res.status(500).send(err);
           });
       }
-})
+  })
 });
 
 router.get("/login", function(req, res) {
