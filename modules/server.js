@@ -53,11 +53,8 @@ app.use(express.static(path.join(__dirname, '../public')));
 // Configure routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
-<<<<<<< HEAD
 app.use('/alerts', alertRouter);
-=======
 app.use('/pos', positionRouter);
->>>>>>> 2126d72ef96e016f7c05f0d04c05db31771fd880
 
 /**
  * Configuration
