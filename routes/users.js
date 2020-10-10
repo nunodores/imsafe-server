@@ -37,7 +37,7 @@ router.post('/register', function(req, res) {
   })
 });
 
-router.get("/login", function(req, res) {
+router.post("/login", function(req, res) {
   db.db.collection("User")
     .findOne({login: req.body.login})
     .then(document => {
