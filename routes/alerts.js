@@ -33,7 +33,7 @@ router.delete('/:id', function(req, res, next) {
 // PUT /alerts/:id : Update an alert document
 router.put('/:id', function(req, res, next) {
     delete req.body._id;
-    req.body.last_update = new Date(Date.now());
+    req.body.last_update = new Date(Date.now()).toString();
 	db.db.collection('Alert').findOneAndUpdate({_id: new db.ObjectID(req.params.id)}, {$set: req.body}, {returnOriginal: false}).then((result) => {
 		if (result.value) {
 			res.json(result.value)
@@ -47,7 +47,7 @@ router.put('/:id', function(req, res, next) {
 
 // Insert an alert
 router.post('/', function(req, res, next) {
-    req.body.last_update = new Date(Date.now());
+    req.body.last_update = new Date(Date.now()).toString();
 	db.db.collection('Alert').insertOne(req.body).then((result) => {
 		req.body._id = result.insertedId
 		res.json(req.body)

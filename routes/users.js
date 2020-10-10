@@ -4,6 +4,7 @@ const db = require('../modules/db');
 const bcrypt = require('bcrypt');
 var jwt = require('jsonwebtoken');
 
+
 /* GET users listing. */
 router.get("/", function(req, res) {
   db.db
@@ -17,6 +18,22 @@ router.get("/", function(req, res) {
       console.log("Error within get alerts:", err);
     });
 });
+
+// Get a user by login
+router.get('/:id', function(req, res, next) {
+  console.log(req.params.id)
+  db.db
+    .collection("User")
+    .findOne({login: req.params.id})
+    .then(item => {
+      delete item.password;
+      res.json(item);
+    })
+    .catch(err => {
+      console.log("Error within get alerts:", err);
+    });
+})
+
 
 router.post('/register', function(req, res) {
   bcrypt.hash(req.body.password, 10, (err, hash) => {
@@ -46,7 +63,7 @@ router.post("/login", function(req, res) {
           if(res2){
               const exp = Date.now() + 12 * 60 * 60 * 1000;
               var token = jwt.sign({ id: document._id }, 'jwtsecret', { expiresIn: exp });
-              res.json({token: token});
+              res.json({token: token, login: req.body.login});
           } else {
             res.status(500).send(err);
           }
