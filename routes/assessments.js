@@ -3,9 +3,26 @@ var express = require('express');
 const router = express.Router();
 const db = require('../modules/db');
 
+// Insert an assessment
+router.post('/', function(req, res, next) {
+    db.db.collection('Assessment').find({user_uuid: req.body.user_uuid, alert_id: req.body.alert_id}).toArray().then(result => {
+        if(result.length==0) {
+            db.db.collection('Assessment').insertOne(req.body).then((result) => {
+                req.body._id = result.insertedId
+                res.json(req.body)
+            }).catch((err) => {
+                res.status(500).send(err)
+            });
+        } else {
+            res.status(404).send()
+        }
+    }).catch((err) => {
+        res.status(500).send(err)
+    });
+});
+
 // Get an array of assessments for an alert
 router.get('/:id', function(req, res, next) {
-    console.log(req.params.id)
     db.db
       .collection("Assessment")
       .find({alert_id: req.params.id})
@@ -45,25 +62,5 @@ router.put('/:id', function(req, res, next) {
 		res.status(500).send(err)
 	});
 });
-
-// Insert an alert
-router.post('/', function(req, res, next) {
-    
-    db.db.collection('Assessment').find({user_uuid: req.body.user_uuid, alert_id: req.body.alert_id}).toArray().then(result => {
-        if(result.length==0) {
-            db.db.collection('Assessment').insertOne(req.body).then((result) => {
-                req.body._id = result.insertedId
-                res.json(req.body)
-            }).catch((err) => {
-                res.status(500).send(err)
-            });
-        } else {
-            res.status(404).send()
-        }
-    }).catch((err) => {
-        res.status(500).send(err)
-    });
-});
-
 
 module.exports = router;
