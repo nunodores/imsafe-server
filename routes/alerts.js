@@ -16,20 +16,6 @@ router.get("/", function(req, res) {
       });
 });
 
-
-// DELETE /alerts/:id  : delete an alert document by id
-router.delete('/:id', function(req, res, next) {
-    db.db.collection('Alert').findOneAndDelete({_id: new db.ObjectID(req.params.id)}).then((result2) => {
-        if (result2.value) {
-            res.json(result2.value)
-        } else {
-            res.status(404).send()
-        }
-	}).catch((err) => {
-		res.status(500).send(err)
-	});
-});
-
 // PUT /alerts/:id : Update an alert document
 router.put('/:id', function(req, res, next) {
     delete req.body._id;
@@ -40,6 +26,19 @@ router.put('/:id', function(req, res, next) {
 		} else {
 			res.status(404).send()
 		}
+	}).catch((err) => {
+		res.status(500).send(err)
+	});
+});
+
+// DELETE /alerts/:id : delete an alert document by id
+router.delete('/:id', function(req, res, next) {
+    db.db.collection('Alert').findOneAndDelete({_id: new db.ObjectID(req.params.id)}).then((result2) => {
+        if (result2.value) {
+            res.json(result2.value)
+        } else {
+            res.status(404).send()
+        }
 	}).catch((err) => {
 		res.status(500).send(err)
 	});

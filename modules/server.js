@@ -12,6 +12,7 @@ const positionRouter = require('../routes/position')
 const indexRouter = require('../routes/index')
 const alertRouter = require('../routes/alerts')
 const assessmentRouter = require('../routes/assessments')
+var cors = require('cors')
 
 /**
  * Variables
@@ -19,6 +20,7 @@ const assessmentRouter = require('../routes/assessments')
 
 // Global variables
 const port = 9000
+
 
 // Create an authorization middleware to be used on the route to be secured
 var jwt = require('jsonwebtoken');
@@ -52,9 +54,12 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
    next();
   });
+
+app.use(cors());
 // Configure routes
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
