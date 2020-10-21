@@ -2,6 +2,9 @@
  * Load modules
  */
 var createError = require('http-errors');
+const https = require('https');
+const fs = require('fs');
+
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
@@ -20,25 +23,28 @@ var cors = require('cors')
 
 // Global variables
 const port = 9000
-
+const options = {
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
+  };
 
 // Create an authorization middleware to be used on the route to be secured
 var jwt = require('jsonwebtoken');
 const jwtSecret = process.env.JWT_SECRET;
 const authMiddleware = (req, res, next) => {
     var token = req.get('authorization');
-    if (!token) {          
+    if (!token) {
         return res.json({ success: false, error: "A token is mandatory to subscribe to this API." });
     }
     jwt.verify(token, jwtSecret, (err, decoded) => {
-        if (err) {              
+        if (err) {
             return res.json({ success: false, error: "Unable to parse token." });
         }
-        if (decoded.exp <= Date.now()) {              
+        if (decoded.exp <= Date.now()) {
             return res.json({ success: false, error: "Token has expired." });
         }
-    req.token = decoded;
-    next();
+        req.token = decoded;
+        next();
     });
 }
 
@@ -52,12 +58,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '../public')));
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-   next();
-  });
+
+    next();
+});
 
 app.use(cors());
 // Configure routes
@@ -66,7 +73,6 @@ app.use('/users', usersRouter);
 app.use('/alerts', alertRouter);
 app.use('/pos', positionRouter);
 app.use('/assessments', assessmentRouter);
-
 /**
  * Configuration
  */
@@ -74,17 +80,17 @@ app.use('/assessments', assessmentRouter);
 // Configure server
 
 // limit : it controls the maximum request body size. 
-app.use(bodyParser.json({limit:"1.1MB"}));
+app.use(bodyParser.json({ limit: "1.1MB" }));
 
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next(createError(404));
 });
 
 // Configure routes
 app.use(function (req, res, next) {
-    console.log("[SERVER]"+req.method+ " " +req.url)
+    console.log("[SERVER]" + req.method + " " + req.url)
     next();
 });
 
@@ -100,8 +106,10 @@ app.use(function (req, res, next) {
 // });
 
 // Start server
+var server = https.createServer(options, app);
+
 var start = function (callback) {
-    app.listen(port,  () => {
+    server.listen(port, () => {
         //console.info(`[Server] Listening on http://${host}:${port}`);
         console.info(`[Server] Listening on ${port}`)
         if (callback) callback(null)
